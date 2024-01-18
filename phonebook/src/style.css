@@ -1,0 +1,20 @@
+label {
+  margin-bottom: 0.5em;
+  display: block;
+}
+
+input {
+  margin: 0 0.5em;
+}
+
+button {
+  display: block;
+}
+
+table {
+  border-spacing: 0;
+}
+
+td {
+  padding-right: 1em;
+}
