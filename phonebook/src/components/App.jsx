@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
-import '@/style.css'
 import * as personService from '@/services/persons'
 import { PersonForm } from '@/components/PersonForm'
 import { Filter } from '@/components/Filter'
 import { Persons } from '@/components/Persons'
+import { Message, MessageType } from '@/components/Message'
 
 export function App() {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     const fetchPersons = async () => {
@@ -30,6 +31,7 @@ export function App() {
     const newPerson = await personService.create(newName, newNumber)
     setPersons(persons.concat(newPerson))
     clearInput()
+    showMessage(`Added ${newPerson.name}`, MessageType.Success)
   }
 
   const handleExistingPerson = async (person) => {
@@ -45,8 +47,10 @@ export function App() {
         person.id === updatedPerson.id ? updatedPerson : person)
       )
       clearInput()
+      showMessage(`Updated ${updatedPerson.name}`, MessageType.Success)
     } catch (error) {
-      alert(error)
+      console.log(error.message)
+      showMessage(`Failed to update ${person.name}`, MessageType.ERROR)
     }
   }
 
@@ -61,14 +65,22 @@ export function App() {
     try {
       await personService.remove(id)
       setPersons(persons.filter((person) => person.id !== id))
+      showMessage(`Deleted ${name}`, MessageType.Success)
     } catch (error) {
-      alert(error)
+      console.log(error.message)
+      showMessage(`Failed to delete ${name}`, MessageType.ERROR)
     }
+  }
+
+  const showMessage = (content, messageType) => {
+    setMessage({ content, messageType })
+    setTimeout(() => setMessage(null), 3000)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Message content={message?.content} messageType={message?.messageType} />
       <PersonForm
         addPerson={addPerson}
         newName={newName}
